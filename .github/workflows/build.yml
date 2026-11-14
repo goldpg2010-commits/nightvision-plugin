@@ -1,0 +1,33 @@
+name: Compilar NightVision
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar arquivos
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Extrair projeto
+        run: unzip -o nightvision-plugin-source.zip -d .
+
+      - name: Compilar plugin
+        run: mvn -B -f nightvision-plugin/pom.xml clean package
+
+      - name: Guardar arquivo JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: NightVision-JAR
+          path: nightvision-plugin/target/nightvision-1.1.0.jar
